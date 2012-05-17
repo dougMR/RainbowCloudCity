@@ -1,0 +1,95 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1038\cocoasubrtf360
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;\red0\green128\blue255;}
+\margl1440\margr1440\vieww10880\viewh9620\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural\pardirnatural
+
+\f0\fs24 \cf0 \
+\
+For each level, while moving clouds, \
+   if(world Leftside is within [widest cloud] of screen (player.xPos + player.x)\
+      draw overlapping cloud off left edge (-x) until it is offscreen - off left edge of world I think, not offscreen\
+\
+   else\
+     draw overlapping cloud off right edge until its x > right edge\
+\
+\
+----------------------------------\
+\
+when jumping off cloud, too much xMomentum in cloud's movement direction is being applied\
+-- especially when jumping from underneath\
+\
+----------------------------------\
+\
+stars that fly out while player climbs rainbow - make them multi-colored (rainbow shades)\
+\
+----------------------------------\
+\
+flying stars don't span a range, they are mostly horizontal.  illusion?\
+they move by tween, not by rotation or x/y speeds\
+\
+----------------------------------\
+\
+\cf2 timer fires every 30 secs\
+- if(noKeysPressed)\{\
+reset();\
+\}else\{\
+noKeysPressed = true;\
+\}\
+noKeysPressed = false -- whenever a game key is pressed;\
+Also, 'R' will reset\cf0 \
+\
+----------------------------------\
+\
+new prize colors should skew to the colors you're looking for\
+\
+tops of rainbows should be on prize clouds\
+\
+rainbows should span more levels\
+\
+\
+----------------------------------\
+\
+collect party guests by serving them invitations\
+when you go to party cloud the party people tell you a word balloon with a picture of another guest who still has to be invited.  The guests you invite are in the party when you go back.\
+\
+GUEST -\
+   Materialize - offscreen\
+   Collision - pause, serve invitation, rainbow grows from current cloud to Party cloud, _player and _guest auto-slide up the rainbow.  Host tells player to get another guest\'85  Or, game is done?\
+\
+\
+----------------------------------\
+\
+complete rainbow meter in order to send guest (or self) to Party Cloud.\
+ -- if you touch a guest but rainbowmeter is not complete\
+        she gets an invitation, stays on cloud awaiting another touch w/ full meter\
+\
+NO!\
+-- guest automatically generates their own rainbow that transports them to party.\
+-- when your meter is full, click on it to ride to Party Cloud\
+   (or, it auto-generates and takes you to PC ?)\
+  -- traveling to PC via rainbow adds rainbow to party.\
+  -- if some guests are missing, you get bonus ability \'97 higher jumps, better turning speed ?  Speech balloon with picture of next guest shows from Host.\
+  -- if all guests are there, you win!!\
+\
+No rainbow goes to PC except rainbow-meter generated rainbows.\
+\
+RAINBOW PARTY\
+You are gathering rainbows and guests for the big Party Cloud party.\
+\
+7 Guest Bosses\
+20 Guest partygoers\
+1 Host (always there)\
+Decorations  (rainbows, clouds)\
+Music (speakers & actual audio)	\
+\
+to start, 2 guests in the World at a time.  Add one when one goes to party.\
+\
+\
+----------------------------------\
+\
+\
+strange movement of prizes could be because prize thinks it's in a cloud?  (prize.inCloud)\
+\
+----------------------------------\
+   }
