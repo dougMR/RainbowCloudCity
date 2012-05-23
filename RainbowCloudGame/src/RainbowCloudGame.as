@@ -60,8 +60,10 @@ package {
 		private var _party:Party;
 		private var _partyHolder:Sprite;
 		private var _guestsToSpawn:Vector.<Guest>;
-		private var _guests:Vector.<Guest>;
+		private var _guestsInWorld:Vector.<Guest>;
 		private var _guestTimer:Timer;
+		private var _invitation:Invitation;
+		private var _invitedGuest:Guest;
 		
 		//private var _playerOnCloud:Boolean = false;
 		//private var _playerInCloud:Boolean = false;
@@ -202,7 +204,7 @@ package {
 			_levels = new Vector.< Vector.<Cloud> >();
 			
 			_partyHolder = new Sprite();
-			_guests = new Vector.<Guest>();
+			_guestsInWorld = new Vector.<Guest>();
 			_guestsToSpawn = new Vector.<Guest>();
 			
 			for(var i:uint = 1; i <= 6; i++){
@@ -675,10 +677,18 @@ package {
 			
 			_prizesHolder.addChild(p);
 			_prizes.push(p);
-		}
+				p.addEventListener(MouseEvent.CLICK, tempPrizeClickHandler);
+			}
+			private function tempPrizeClickHandler (e:MouseEvent):void{
+				trace("RainbowCloudGame::tempGuestClickHandler");
+				var g:Prize = e.currentTarget as Prize;
+				trace("PRIZE::\rinCloud: "+g.inCloud);
+				trace("ySpeed: "+g.ySpeed);
+				trace("xSpeed: "+g.xSpeed);
+			}
 		
-		private function createGuest ():void{
-			trace("RainbowCloudGame::createGuest");
+		private function spawnGuest ():void{
+			trace("RainbowCloudGame::spawnGuest");
 			// Should be called spawnGuest, since guests are already created
 			var i:uint = Math.floor(Math.random()*_guestsToSpawn.length);
 			var g:Guest = _guestsToSpawn[i];
@@ -686,8 +696,16 @@ package {
 			g.xPos = Math.random() * _worldWidth;
 			g.yPos =  _worldHeight - Math.random()*_worldHeight*0.6;
 			_partyHolder.addChild(g);
-			_guests.push(g);
+			_guestsInWorld.push(g);
 			_guestsToSpawn.splice(i,1);
+			g.addEventListener(MouseEvent.CLICK, tempGuestClickHandler);
+		}
+		private function tempGuestClickHandler (e:MouseEvent):void{
+			trace("RainbowCloudGame::tempGuestClickHandler");
+			var g:Guest = e.currentTarget as Guest;
+			trace("GUEST::\rinCloud: "+g.inCloud);
+			trace("ySpeed: "+g.ySpeed);
+			trace("xSpeed: "+g.xSpeed);
 		}
 		
 		private function destroyPrize (p:Prize):void{
@@ -774,6 +792,7 @@ package {
 			// Move World
 					
 			checkPrizeCollisions();
+			checkGuestCollisions();
 			
 			_rainbowsHolder.x = _worldFG.x = _partyHolder.x = - _player.xPos + _player.x; //+= xVel;
 			_rainbowsHolder.y = _worldFG.y = _partyHolder.y = - _player.yPos + _player.y;//+= yVel;
@@ -988,8 +1007,57 @@ package {
 			_guestTimer.start();
 			_noKeysPressed = true;
 			_timeoutTimer.start();
-			//_bellSound.playMe();
+			_musicBoxSound.playMe();
 			_windSound.playMe(0,999);
+		}
+		
+		//-----------------------------
+		//    v COLLISION CHECKS V
+		//-----------------------------
+		
+		private function checkGuestCollisions ():void{
+			//trace("RainbowCloudGame::checkGuestCollision");
+			var hitGuest:Guest = null;
+
+			var y1:Number = _player.yPos;
+			var y2:Number = y1 + _player.ySpeed;
+			var x1:Number = _player.xPos;
+			var x2:Number = x1 + _player.xSpeed;
+			var pl:Number,pr:Number,pt:Number,pb:Number;
+			if(x1<x2){
+				pl = x1-_player.width/2;
+				pr = x2 + _player.width/2;
+			}else{
+				pl = x2-_player.width/2;
+				pr = x1 + _player.width/2;
+			}
+			if(y1<y2){
+				pt = y1 - _player.height/2;
+				pb = y2;
+			}else{
+				pt = y2 - _player.height/2;
+				pb = y1;
+			}
+
+			for (var i:uint = 0; i < _guestsInWorld.length; i++){
+				var g:Guest = _guestsInWorld[i];
+				var l:Number = g.x - g.width/2;
+				var r:Number = g.x + g.width/2;
+				var t:Number = g.y - g.height/2;
+				var b:Number = g.y;
+				// check collision
+				if( (pl < l && pr > l) || (pl < r && pl > l) || (pr > r && pl < r) || (pr < r && pr > l) ){
+					// Horizontally aligned for collision
+					if( (pt < t && pb > t) || (pt > t && pt < b) || (pb > b && pt < b) || (pb < b && pb > t) ){
+						// Vertically alligned.  Collision.
+						hitGuest = g;
+						break;
+					}
+				}
+			}
+			if(hitGuest != null){
+				playerHitGuest(hitGuest);
+			}
 		}
 		
 		private function checkRainbowCollisions ():void{
@@ -1128,6 +1196,7 @@ package {
 								
 									}
 									who.inCloud = c;
+									c.inMe.push(who);
 								
 						//	}
 						}
@@ -1136,6 +1205,9 @@ package {
 			}
 			
 		}
+		//-------------------
+		//   v MOVE v
+		//-------------------
 		private function moveInCloud (who:Body):void{
 			//trace("RainbowCloudGame::moveInCloud");
 			
@@ -1154,8 +1226,9 @@ package {
 /*				if(c.xSpeed > 0 && who.xSpeed > 0 || c.xSpeed < 0 && who.xSpeed < 0){
 					 who.xSpeed += c.xSpeed;
 				}*/
-
+				c.inMe.splice(c.inMe.indexOf(who),1);
 				who.inCloud = null;
+				
 			}else{
 				// Still In Cloud
 				
@@ -1229,8 +1302,8 @@ package {
 		
 		private function moveGuests ():void{
 			//trace("RainbowCloudGame::moveGuests");
-			for(var i:uint = 0; i < _guests.length; i++){
-				var g:Guest = _guests[i];
+			for(var i:uint = 0; i < _guestsInWorld.length; i++){
+				var g:Guest = _guestsInWorld[i];
 				
 				if(g.inCloud != null){
 					moveInCloud(g);
@@ -1259,6 +1332,7 @@ package {
 			// world edge on screen?
 			var assumedMaxCloudWidth:Number = 800;
 			var showingEdge:String = "none";
+			var im:uint; // <-- cloud.inMe iterator
 			
 			if(_worldFG.x + assumedMaxCloudWidth > _stageWidth/2 ){
 				showingEdge = "left";
@@ -1277,12 +1351,17 @@ package {
 						if(showingEdge == "right" || showingEdge =="none" && cloud.xPos < cloud.width){
 							// Move to right edge
 							cloud.xPos += _worldWidth;
-							
+							for(im = 0; im < cloud.inMe.length; im ++){
+								cloud.inMe[im].xPos += _worldWidth;
+							}
 						} 
 					}else if(cloud.xPos > _worldWidth - cloud.width){
 						if(showingEdge == "left" || showingEdge == "none" && cloud.xPos > _worldWidth){
 
 							cloud.xPos -= _worldWidth;
+							for( im = 0; im < cloud.inMe.length; im ++){
+								cloud.inMe[im].xPos -= _worldWidth;
+							}
 						}
 					}
 				}
@@ -1400,6 +1479,57 @@ package {
 			// Destroy Prize
 			destroyPrize(p);
 			_enchantSound.playMe(0,1,0.5);
+		}
+		
+		private function playerHitGuest (g:Guest):void{
+			trace("RainbowCloudGame::playerHitGuest");
+			_invitedGuest = g;
+			g.parent.removeChild(g);
+			_cloudsHolder.addChild(g);
+			// Take guest out of _guestsInWorld, so doesn't ghet hit agian
+			_guestsInWorld.splice(_guestsInWorld.indexOf(g),1);
+			// Freeze game
+			if(!_paused){
+				togglePause();
+			}
+			// Present Invitation, play invite animation, then remove invitation.
+			var _invitation = new Invitation();
+			_invitation.x = g.xPos;
+			_invitation.y = g.yPos - g.height;
+			_cloudsHolder.addChild(_invitation);
+			
+			// Wait for invitation to finish animation
+			_invitation.addEventListener(Event.COMPLETE, invitationCompleteHandler);
+			_invitation.play();
+		}
+		
+		private function guestGoToParty ():void{
+			trace("RainbowCloudGame::guestGoToParty");
+			
+			// Fly Guest offscreen towards party
+			var partyAngle:Number = Math.atan2(_party.y-_invitedGuest.y, _party.x - _invitedGuest.x);
+			_invitedGuest.rotation = rtod(partyAngle) + 90;
+			var partyCos:Number = Math.cos(partyAngle);
+			var partySin:Number = Math.sin(partyAngle);
+			var xDist:Number = partyCos * 500;
+			var yDist:Number = partySin * 500;
+			var guestTween:GTween = new GTween(_invitedGuest, 1, {x:_invitedGuest.xPos + xDist, y:_invitedGuest.yPos + yDist }, {onComplete:guestToPartyCompleteHandler, ease:Cubic.easeIn});
+			
+			// once offscreen, Remove flying guest, remove flying guest from _guestsInWorld, turn on corresponding guest at party
+			
+		}
+		
+		private function guestToPartyCompleteHandler (e:GTween):void{
+			trace("RainbowCloudGame::guestToPartyCompleteHandler");
+			var guest:Guest = e.target as Guest;
+			// once offscreen, Remove flying guest, remove flying guest from _guestsInWorld, turn on corresponding guest at party
+			_party.guests[guest.guestType-1].visible = true;
+			guest.parent.removeChild(guest);
+			
+			// Unfreeze Game
+			if(_paused){
+				togglePause();
+			}
 		}
 		
 		private function updateOutput ():void{
@@ -1547,6 +1677,16 @@ package {
 			return (value % 1) ? int( value ) + 1 : value;
 		}
 		
+		private function rtod (r):Number{
+			trace("RainbowCloudGame::rtod");
+			return  r * 180/Math.PI;
+		}
+		
+		private function dtor (d):Number{
+			trace("RainbowCloudGame::dtor");
+			return d * Math.PI/180;
+		}
+		
 	    //--------------------------------------------------------------------------
 	    //
 	    //  Event Handlers
@@ -1629,9 +1769,9 @@ package {
 		
 		private function guestTimerHandler (e:TimerEvent):void{
 			trace("RainbowCloudGame::guestTimerHandler");
-			if(_guests.length < 2){
+			if(_guestsInWorld.length < 2){
 				// Make Guest
-				createGuest();
+				spawnGuest();
 				// All Guests spawned?
 				if(_guestsToSpawn.length == 0){
 					_guestTimer.reset();
@@ -1642,7 +1782,7 @@ package {
 		
 		private function timeoutHandler (e:TimerEvent):void{
 			trace("RainbowCloudGame::timeoutHandler");
-			if(_noKeysPressed == true){
+			if(_noKeysPressed == true && !_paused){
 				endGame();
 				
 				resetGame();
@@ -1662,6 +1802,17 @@ package {
 			
 			stopSounds();
 			resetGame();
+		}
+		
+		private function invitationCompleteHandler (e:Event):void{
+			trace("RainbowCloudGame::invitationCompleteHandler");
+			// Remove Invite
+			var invite:Invitation = e.target as Invitation;
+			//destroyInvitation();
+			invite.removeEventListener(Event.COMPLETE,invitationCompleteHandler);
+			invite.parent.removeChild(invite);
+			// Send Guest to party - only 1 invited guest at a time?
+			guestGoToParty();
 		}
 		
 	};

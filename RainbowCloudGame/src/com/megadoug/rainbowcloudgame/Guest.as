@@ -75,6 +75,18 @@ package com.megadoug.rainbowcloudgame{
 		public function set meAtParty(value:MovieClip):void {
 			_meAtParty = value;
 		};
+		
+		/**
+		 * Gets / sets guestType.
+		 */
+
+		public function get guestType():uint {
+			return _guestType;
+		};
+
+		public function set guestType(value:uint):void {
+			_guestType = value;
+		};
 
 	    //--------------------------------------------------------------------------
 	    //

@@ -23,8 +23,8 @@ package com.megadoug.rainbowcloudgame{
 	    //
 	    //--------------------------------------------------------------------------
 	
-		private var _guests:Vector.<Guest>;
-		private var _guestsAtParty:Vector.<MovieClip>;
+		private var _guests:Vector.<MovieClip>;
+		//private var _guestsAtParty:Vector.<MovieClip>;
 		private var _crowdLevel:uint;
 		private var _decorationLevel:uint;
 		
@@ -37,7 +37,7 @@ package com.megadoug.rainbowcloudgame{
 
 		public function Party () {
 			trace("Party");
-			
+			initGuests();
 		};
 
 		//--------------------------------------------------------------------------
@@ -45,6 +45,13 @@ package com.megadoug.rainbowcloudgame{
 	    //  Accessors
 	    //
 	    //--------------------------------------------------------------------------
+		/**
+		 * Gets / sets guests.
+		 */
+
+		public function get guests():Vector.<MovieClip> {
+			return _guests;
+		};
 
 	    //--------------------------------------------------------------------------
 	    //
@@ -54,11 +61,9 @@ package com.megadoug.rainbowcloudgame{
 		
 		private function initGuests ():void{
 			trace("Party::initGuests");
-			_guests = new Vector.<Guest>();
-			_guestsAtParty =  Vector.<MovieClip>(guest01,guest02,guest03,guest04,guest05,guest06);
-			for(var i:uint = 1; i < 6; i++){
-				_guests.push(new Guest(i));
-				_guestsAtParty[i].visible = false;
+			_guests = new <MovieClip>[guest01,guest02,guest03,guest04,guest05,guest06];
+			for(var i:uint = 0; i < 6; i++){
+				_guests[i].visible = false;
 			}
 		}
 

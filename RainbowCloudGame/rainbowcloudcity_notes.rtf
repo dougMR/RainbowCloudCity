@@ -1,17 +1,26 @@
 {\rtf1\ansi\ansicpg1252\cocoartf1038\cocoasubrtf360
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;}
-{\colortbl;\red255\green255\blue255;\red0\green128\blue255;}
+{\colortbl;\red255\green255\blue255;\red0\green128\blue255;\red0\green128\blue0;\red255\green0\blue0;
+}
 \margl1440\margr1440\vieww10880\viewh9620\viewkind0
 \pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural\pardirnatural
 
-\f0\fs24 \cf0 \
+\f0\fs24 \cf0 -----------------------------------\
 \
+make lame-computer settings to speed up game on slower machines.  Try:\
+ - remove cloud bevels\
+ - \
+\
+\
+-----------------------------------\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural\pardirnatural
+\cf2 \
 For each level, while moving clouds, \
    if(world Leftside is within [widest cloud] of screen (player.xPos + player.x)\
       draw overlapping cloud off left edge (-x) until it is offscreen - off left edge of world I think, not offscreen\
 \
    else\
-     draw overlapping cloud off right edge until its x > right edge\
+     draw overlapping cloud off right edge until its x > right edge\cf0 \
 \
 \
 ----------------------------------\
@@ -21,7 +30,7 @@ when jumping off cloud, too much xMomentum in cloud's movement direction is bein
 \
 ----------------------------------\
 \
-stars that fly out while player climbs rainbow - make them multi-colored (rainbow shades)\
+\cf2 stars that fly out while player climbs rainbow - make them multi-colored (rainbow shades)\cf0 \
 \
 ----------------------------------\
 \
@@ -51,6 +60,8 @@ rainbows should span more levels\
 ----------------------------------\
 \
 collect party guests by serving them invitations\
+ -- when served invite, move guest and invite in front of all else\
+\
 when you go to party cloud the party people tell you a word balloon with a picture of another guest who still has to be invited.  The guests you invite are in the party when you go back.\
 \
 GUEST -\
@@ -60,15 +71,10 @@ GUEST -\
 \
 ----------------------------------\
 \
-complete rainbow meter in order to send guest (or self) to Party Cloud.\
- -- if you touch a guest but rainbowmeter is not complete\
-        she gets an invitation, stays on cloud awaiting another touch w/ full meter\
-\
-NO!\
 -- guest automatically generates their own rainbow that transports them to party.\
 -- when your meter is full, click on it to ride to Party Cloud\
    (or, it auto-generates and takes you to PC ?)\
-  -- traveling to PC via rainbow adds rainbow to party.\
+ \cf3  -- traveling to PC via rainbow adds rainbow to party.\cf0 \
   -- if some guests are missing, you get bonus ability \'97 higher jumps, better turning speed ?  Speech balloon with picture of next guest shows from Host.\
   -- if all guests are there, you win!!\
 \
@@ -82,6 +88,9 @@ You are gathering rainbows and guests for the big Party Cloud party.\
 1 Host (always there)\
 Decorations  (rainbows, clouds)\
 Music (speakers & actual audio)	\
+Lights (flashing, colored)\
+Food (Pizza, cake, fruit)\
+\
 \
 to start, 2 guests in the World at a time.  Add one when one goes to party.\
 \
@@ -92,4 +101,24 @@ to start, 2 guests in the World at a time.  Add one when one goes to party.\
 strange movement of prizes could be because prize thinks it's in a cloud?  (prize.inCloud)\
 \
 ----------------------------------\
-   }
+\
+special prizes:\
+\
+Guest Radar \
+ - spawns image of guest with arrow pointing in direction of that guest (arrow moves as you move, following angle to Guest)\
+\
+Big Jump\
+ - immediately springs you way up.\
+\
+Color Prize Magnet\
+ - pulls all color prizes (rainbow prizes) that are onscreen (or within x range) to you.  Get all.\
+\
+\
+\
+------------------------------------\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\ql\qnatural\pardirnatural
+\cf4 ?? \cf0 At world edge, EVERYTHING disappears as player crosses over ??\
+>> in one observed instance, FG moved so right edge was _worldWidth to the left (worldFG.x was - 2x_worldWidth)\
+\
+}

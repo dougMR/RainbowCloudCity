@@ -28,6 +28,8 @@ package com.megadoug.rainbowcloudgame {
 		private var _yPos:Number;
 		// ^ relative to World, not to screen
 		
+		private var _inMe:Array;
+		
 		private var _width:Number;
 		private var _height:Number;
 		
@@ -51,6 +53,7 @@ package com.megadoug.rainbowcloudgame {
 			_height = h;
 			_cloudColor = color;
 			_circRadius = Math.round(_height / 2);
+			_inMe = new Array();
 			draw();
 			this.cacheAsBitmap = true;
 		};
@@ -61,6 +64,17 @@ package com.megadoug.rainbowcloudgame {
 	    //
 	    //--------------------------------------------------------------------------
 	
+		/**
+		 * Gets / sets inMe.
+		 */
+
+		public function get inMe():Array {
+			return _inMe;
+		};
+
+		public function set inMe(value:Array):void {
+			_inMe = value;
+		};
 	
 		/**
 		 * Gets / sets width.
