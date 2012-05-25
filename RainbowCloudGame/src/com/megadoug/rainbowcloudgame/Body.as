@@ -41,7 +41,7 @@ package com.megadoug.rainbowcloudgame{
 	    //--------------------------------------------------------------------------
 
 		public function Body () {
-			trace("Body");
+			//trace("Body");
 			initBody();
 		};
 
@@ -127,7 +127,7 @@ package com.megadoug.rainbowcloudgame{
 	    //--------------------------------------------------------------------------
 	
 		private function initBody ():void{
-			trace("Body::initBody");
+			//trace("Body::initBody");
 			_xPos = 0;
 			_yPos = 0;
 			_maxXspeed = 10;

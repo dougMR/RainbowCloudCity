@@ -32,6 +32,7 @@ package com.megadoug.rainbowcloudgame{
 		private var _atParty:Boolean;
 		private var _guestType:uint;
 		private var _meAtParty:MovieClip;
+		private var _isInvited:Boolean;
 		
 		//--------------------------------------------------------------------------
 	    //
@@ -40,7 +41,7 @@ package com.megadoug.rainbowcloudgame{
 	    //--------------------------------------------------------------------------
 
 		public function Guest (type:uint = 1, partyGuest:MovieClip = null) {
-			trace("Guest");
+			//trace("Guest");
 			meAtParty = partyGuest;
 			_guestType = type;
 			init();
@@ -87,6 +88,18 @@ package com.megadoug.rainbowcloudgame{
 		public function set guestType(value:uint):void {
 			_guestType = value;
 		};
+		
+		/**
+		 * Gets / sets isInvited.
+		 */
+
+		public function get isInvited():Boolean {
+			return _isInvited;
+		};
+
+		public function set isInvited(value:Boolean):void {
+			_isInvited = value;
+		};
 
 	    //--------------------------------------------------------------------------
 	    //
@@ -94,8 +107,9 @@ package com.megadoug.rainbowcloudgame{
 	    //
 	    //--------------------------------------------------------------------------
 		private function init ():void{
-			trace("Guest::init");
+			//trace("Guest::init");
 			_atParty = false;
+			_isInvited = false;
 			gotoAndStop(_guestType);
 		}
 

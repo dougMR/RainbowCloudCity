@@ -25,9 +25,10 @@ package com.megadoug.rainbowcloudgame{
 	
 		private var _guests:Vector.<MovieClip>;
 		//private var _guestsAtParty:Vector.<MovieClip>;
-		private var _crowdLevel:uint;
-		private var _decorationLevel:uint;
-		
+		private var _crowdLevel:uint = 1;
+		private var _decorationLevel:uint = 1;
+		private var _lightsLevel:uint = 1;
+		private var _musicLevel:uint = 1;
 		
 		//--------------------------------------------------------------------------
 	    //
@@ -52,7 +53,54 @@ package com.megadoug.rainbowcloudgame{
 		public function get guests():Vector.<MovieClip> {
 			return _guests;
 		};
+		
+		/**
+		 * Gets / sets crowdLevel.
+		 */
 
+		public function get crowdLevel():uint {
+			return _crowdLevel;
+		};
+
+		public function set crowdLevel(value:uint):void {
+			_crowdLevel = Math.min(100, value);
+			crowd_mc.gotoAndStop(_crowdLevel);
+		};
+		
+		/**
+		 * Gets / sets decorationLevel.
+		 */
+
+		public function get decorationLevel():uint {
+			return _decorationLevel;
+		};
+
+		public function set decorationLevel(value:uint):void {
+			_decorationLevel =  Math.min(100, value);
+		};
+		
+		/**
+		 * Gets / sets lightsLevel.
+		 */
+
+		public function get lightsLevel():uint {
+			return _lightsLevel;
+		};
+
+		public function set lightsLevel(value:uint):void {
+			_lightsLevel =  Math.min(100, value);
+		};
+		/**
+		 * Gets / sets musicLevel.
+		 */
+
+		public function get musicLevel():uint {
+			return _musicLevel;
+		};
+
+		public function set musicLevel(value:uint):void {
+			_musicLevel =  Math.min(100, value);
+		};
 	    //--------------------------------------------------------------------------
 	    //
 	    //  Init Methods
