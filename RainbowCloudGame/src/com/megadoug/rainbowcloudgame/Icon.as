@@ -504,10 +504,10 @@ package com.megadoug.rainbowcloudgame{
 			var b:Number = 10*(255/250);
 			
 			var m:Array = new Array();
-			            m = m.concat([s, 0, 0, 0, b]);  // red
-			            m = m.concat([0, s, 0, 0, b]);  // green
-			            m = m.concat([0, 0, s, 0, b]);  // blue
-			            m = m.concat([0, 0, 0, 1, 0]);  // alpha
+            m = m.concat([s, 0, 0, 0, b]);  // red
+            m = m.concat([0, s, 0, 0, b]);  // green
+            m = m.concat([0, 0, s, 0, b]);  // blue
+            m = m.concat([0, 0, 0, 1, 0]);  // alpha
 			            
 			
 
@@ -521,10 +521,10 @@ package com.megadoug.rainbowcloudgame{
 			var b:Number = -40*(255/250);
 
 			var m:Array = new Array();
-			            m = m.concat([s, 0, 0, 0, b]);  // red
-			            m = m.concat([0, s, 0, 0, b]);  // green
-			            m = m.concat([0, 0, s, 0, b]);  // blue
-			            m = m.concat([0, 0, 0, 1, 0]);  // alpha
+            m = m.concat([s, 0, 0, 0, b]);  // red
+            m = m.concat([0, s, 0, 0, b]);  // green
+            m = m.concat([0, 0, s, 0, b]);  // blue
+            m = m.concat([0, 0, 0, 1, 0]);  // alpha
 
 
 

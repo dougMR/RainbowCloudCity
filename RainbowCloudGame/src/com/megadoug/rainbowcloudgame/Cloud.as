@@ -26,6 +26,7 @@ package com.megadoug.rainbowcloudgame {
 
 		private var _xPos:Number;
 		private var _yPos:Number;
+		private var _trueYpos:Number;
 		// ^ relative to World, not to screen
 		
 		private var _inMe:Array;
@@ -164,6 +165,18 @@ package com.megadoug.rainbowcloudgame {
 
 		public function set rainbowsAttached(value:uint):void {
 			_rainbowsAttached = value;
+		};
+		
+		/**
+		 * Gets / sets trueYpos.
+		 */
+
+		public function get trueYpos():Number {
+			return _trueYpos;
+		};
+
+		public function set trueYpos(value:Number):void {
+			_trueYpos = value;
 		};
 
 	    //--------------------------------------------------------------------------

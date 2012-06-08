@@ -84,7 +84,7 @@ package com.megadoug.rainbowcloudgame {
 		public function set frame(value:String):void {
 			if(	_frame != value){
 				_frame = value;
-				gotoAndStop(_frame);
+				this.gotoAndStop(_frame);
 			}
 		};
 		

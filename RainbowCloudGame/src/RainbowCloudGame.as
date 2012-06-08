@@ -91,6 +91,7 @@ package {
 		private var _stageWidth:Number;
 		private var _stageHeight:Number;
 		private var _worldYgap:Number;
+		private var _cloudGap:Number = 200;
 		
 //		private var _playerWorldX:Number;
 //		private var _playerWorldY:Number;
@@ -98,11 +99,10 @@ package {
 		private var _xSpeedIncr:Number;
 		private var _speedPct:Number; // <-- 0to1
 		private var _levelsNum:uint;
-		private var _currentLevel:uint;
 		
 		private var _gravity:Number = .12;
 		private var _drag:Number = .95;
-		private var _jumpSpeed:Number = -7;
+		private var _jumpSpeed:Number = -6;
 		
 	//	private var _onscreenClouds:Vector.<Cloud>;
 		private var _levels:Vector.< Vector.<Cloud> >;
@@ -189,13 +189,14 @@ package {
 		private function init ():void{
 			trace("RainbowCloudGame::init");
 			
-			_speedPct = .2;
+			_speedPct = .3;
 			_xSpeedIncr = 1;
 			
-			_worldWidth = stage.stageWidth * 3;//8;
-			_worldHeight = stage.stageHeight * 2;//5;
-			_levelsNum = 7;//18;
-			_currentLevel = 3;
+			_worldWidth = stage.stageWidth * 5;//8;
+			//_worldHeight = stage.stageHeight * 4;//5;
+			_levelsNum = 11;//18;
+			_worldHeight = (_levelsNum ) * _cloudGap;
+			
 			
 			_stageWidth = stage.stageWidth;
 			_stageHeight = stage.stageHeight;
@@ -238,45 +239,7 @@ package {
 			_cloudsHolder = new Sprite();
 			buildClouds();
 			
-			_rainbowMeter = new RainbowMeter();
-			_rainbowMeter.colors = new Vector.<Object>();
-			_rainbowMeter.colors.push({
-				name:"red",
-				mc:_rainbowMeter.red,
-				percent:0,
-				emoticon:": )"
-			});
-			_rainbowMeter.colors.push({
-				name:"orange",
-				mc:_rainbowMeter.orange,
-				percent:0,
-				emoticon:"8 P"
-			});
-			_rainbowMeter.colors.push({
-				name:"yellow",
-				mc:_rainbowMeter.yellow,
-				percent:0,
-				emoticon:"=)"
-			});
-			_rainbowMeter.colors.push({
-				name:"green",
-				mc:_rainbowMeter.green,
-				percent:0,
-				emoticon:"S; |"
-			});
-			_rainbowMeter.colors.push({
-				name:"blue",
-				mc:_rainbowMeter.blue,
-				percent:0,
-				emoticon:": D"
-			});
-			_rainbowMeter.colors.push({
-				name:"violet",
-				mc:_rainbowMeter.violet,
-				percent:0,
-				emoticon:"|: ?"
-			});
-			
+			_rainbowMeter = new RainbowMeter();			
 			
 			_jumpSound = makeSound(Jump);
 			_landSound = makeSound(Land);
@@ -331,7 +294,7 @@ package {
 			var maxCloudH:Number = 90;
 			//var maxGap:Number = 1400;//(_worldWidth - (minCloudW * numClouds)) / numClouds;
 			//var minGap:Number = 400;//(_worldWidth - (maxCloudW * numClouds)) / numClouds;
-			var yStep:Number = (_worldHeight - maxCloudH) / (_levelsNum-1);
+			var yStep:Number = _cloudGap; //(_worldHeight - maxCloudH) / (_levelsNum-1);
 			var nextX:Number;
 			
 			_cloudsHolder.graphics.beginFill(0x00ffFF,1);
@@ -389,6 +352,8 @@ package {
 					
 					//nextX += w + minGap + Math.random()*(maxGap - minGap);
 				}
+				_levels[i][0].trueYpos = levely;
+				// First cloud in row acts at homing beacon for that row's home y position
 			}	
 			
 			// Add Party Cloud
@@ -437,6 +402,7 @@ package {
 			pauseCombo = new KeyCombo([16], null, togglePause);
 			resetCombo = new KeyCombo([82], null, endGame);
 		}
+	
 		private function togglePause ():void{
 			trace("RainbowCloudGame::togglePause");
 			if(!_paused){//hasEventListener(Event.ENTER_FRAME)){
@@ -469,7 +435,6 @@ package {
 				_speedPct = .2;
 				_xSpeedIncr = 1;
 
-				_currentLevel = 3;
 				//_clouds = new Vector.<Cloud>();
 
 /*				while(_rainbowsHolder.numChildren > 0){
@@ -482,12 +447,7 @@ package {
 					destroyPrize(_prizes[i]);
 				}
 
-				_rainbowMeter.red.rotation =
-				_rainbowMeter.orange.rotation =
-				_rainbowMeter.yellow.rotation =
-				_rainbowMeter.green.rotation =
-				_rainbowMeter.blue.rotation =
-				_rainbowMeter.violet.rotation = 0;
+
 				
 				_levels.length = 0;
 				while(_cloudsHolder.numChildren > 0){
@@ -646,36 +606,37 @@ package {
 			_rainbowsHolder.addChild(s);
 			
 		}	
+	
 		private function destroyRainbow (o:Object):void{
-				//trace("RainbowCloudGame::destroyRainbow");
+			//trace("RainbowCloudGame::destroyRainbow");
 
-				// Make Star shower
-				o.cloud1.rainbowsAttached --;
-				o.cloud2.rainbowsAttached --;
-				//var myKind:String;
+			// Make Star shower
+			o.cloud1.rainbowsAttached --;
+			o.cloud2.rainbowsAttached --;
+			//var myKind:String;
 
-				var points_ar:Array = o.rainbow.getPoints(100);
-				for(var i:uint = 0; i<points_ar.length; i++){
-					//myKind = randomColor();
-					var s:Star = new Star(4+Math.random()*15, Math.random()*144-72,-1,-1);//,myKind);
-					_starsHolder.addChild(s);
-					s.xPos = points_ar[i].x;
-					s.yPos = points_ar[i].y;
-					s.startFall();
-				}
-
-
-				if(_inRainbowObject == o){
-					_fluteSound.stop();
-					_playerInRainbow = false;
-					_inRainbowObject = null;
-				}
-				_rainbowsHolder.removeChild(o.rainbow);
-				if(_rainbowsHolder.contains(o.starburst)){
-					_rainbowsHolder.removeChild(o.starburst);
-				}
-				_rainbows.splice(_rainbows.indexOf(o),1);
+			var points_ar:Array = o.rainbow.getPoints(100);
+			for(var i:uint = 0; i<points_ar.length; i++){
+				//myKind = randomColor();
+				var s:Star = new Star(4+Math.random()*15, Math.random()*144-72,-1,-1);//,myKind);
+				_starsHolder.addChild(s);
+				s.xPos = points_ar[i].x;
+				s.yPos = points_ar[i].y;
+				s.startFall();
 			}
+
+
+			if(_inRainbowObject == o){
+				_fluteSound.stop();
+				_playerInRainbow = false;
+				_inRainbowObject = null;
+			}
+			_rainbowsHolder.removeChild(o.rainbow);
+			if(_rainbowsHolder.contains(o.starburst)){
+				_rainbowsHolder.removeChild(o.starburst);
+			}
+			_rainbows.splice(_rainbows.indexOf(o),1);
+		}
 		
 		private function createPrize ():void{
 			//trace("RainbowCloudGame::createPrize");
@@ -688,7 +649,7 @@ package {
 				var index:uint = Math.floor(Math.random()*6);
 				color = _rainbowMeter.colors[index];
 				myKind = color.name;				
-			}while(color.percent == 1);
+			}while(color.percent == 100);
 			
 			var p:Prize = new Prize({radius:30, kind:myKind, text:color.emoticon});
 			_prizeX = (_prizeX + 300) % _worldWidth;
@@ -697,18 +658,34 @@ package {
 			
 			_prizesHolder.addChild(p);
 			_prizes.push(p);
-				p.addEventListener(MouseEvent.CLICK, tempPrizeClickHandler);
+			p.addEventListener(MouseEvent.CLICK, tempPrizeClickHandler);
+		}
+		private function destroyPrize (p:Prize):void{
+			trace("RainbowCloudGame::destroyPrize");
+			_prizes.splice(_prizes.indexOf(p),1);
+			_prizesHolder.removeChild(p);
+		}
+		private function destroyPrizeKind (kind:String):void{
+			trace("RainbowCloudGame::destroyPrizeKind("+kind+")");
+			for(var i:uint = 0; i < _prizes.length; i++){
+				if(_prizes[i].kind == kind){
+					destroyPrize(_prizes[i]);
+				}
 			}
-			private function tempPrizeClickHandler (e:MouseEvent):void{
-				trace("RainbowCloudGame::tempGuestClickHandler");
-				var g:Prize = e.currentTarget as Prize;
-				trace("PRIZE::\rinCloud: "+g.inCloud);
-				trace("cX,W, cY: "+g.inCloud.xPos+", "+g.inCloud.width+", "+g.inCloud.yPos);
-				
-				trace("ySpeed: "+g.ySpeed);
-				trace("xSpeed: "+g.xSpeed);
-				trace("x,y: "+g.xPos+", "+g.yPos);
-			}
+		}
+		
+
+	
+		private function tempPrizeClickHandler (e:MouseEvent):void{
+			trace("RainbowCloudGame::tempGuestClickHandler");
+			var g:Prize = e.currentTarget as Prize;
+			trace("PRIZE::\rinCloud: "+g.inCloud);
+			trace("cX,W, cY: "+g.inCloud.xPos+", "+g.inCloud.width+", "+g.inCloud.yPos);
+			
+			trace("ySpeed: "+g.ySpeed);
+			trace("xSpeed: "+g.xSpeed);
+			trace("x,y: "+g.xPos+", "+g.yPos);
+		}
 		
 		private function spawnGuest ():void{
 			//trace("RainbowCloudGame::spawnGuest");
@@ -723,6 +700,7 @@ package {
 			_guestsToSpawn.splice(i,1);
 			g.addEventListener(MouseEvent.CLICK, tempGuestClickHandler);
 		}
+	
 		private function tempGuestClickHandler (e:MouseEvent):void{
 			trace("RainbowCloudGame::tempGuestClickHandler");
 			var g:Guest = e.currentTarget as Guest;
@@ -734,11 +712,7 @@ package {
 			
 		}
 		
-		private function destroyPrize (p:Prize):void{
-			//trace("RainbowCloudGame::destroyPrize");
-			_prizes.splice(_prizes.indexOf(p),1);
-			_prizesHolder.removeChild(p);
-		}
+
 		
 
 		
@@ -783,7 +757,7 @@ package {
 
 			// Apply Gravity
 			if(_player.inCloud == null && !_playerInRainbow){
-				_player.ySpeed = _player.ySpeed + _gravity;
+				_player.ySpeed = _player.ySpeed + _gravity * _frameSpeedMod;
 				// "+(_player.ySpeed + _gravity));
 			}
 			_player.yPos += _player.ySpeed * _frameSpeedMod;
@@ -813,10 +787,10 @@ package {
 			}else if(_player.xPos > _worldWidth){
 				_player.xPos -= _worldWidth;
 			}
-			if(_player.yPos < -_worldYgap/2){
-				_player.yPos += _worldHeight+_worldYgap;
- 			}else if(_player.yPos > _worldHeight + _worldYgap/2){
-				_player.yPos -= _worldHeight+_worldYgap;
+			if(_player.yPos < 0){ //-_worldYgap/2){
+				_player.yPos += _worldHeight; //+_worldYgap;
+ 			}else if(_player.yPos > _worldHeight ){// + _worldYgap/2){
+				_player.yPos -= _worldHeight; //+_worldYgap;
 				
 			}
 /*			if(_player.xPos == 0){
@@ -907,13 +881,10 @@ package {
 		//---------------------------
 		private function goRight():void{
 			//trace("goRight()");
-			//var mod:Number = _player.inCloud ? .7 : _speedPct;
 			_player.xSpeed += _xSpeedIncr * _speedPct;
-			
 		}
 		private function goLeft():void{
 			//trace("goLeft()");
-			//var mod:Number = _player.inCloud ? .7 : _speedPct;
 			_player.xSpeed -= _xSpeedIncr * _speedPct;
 		}
 		private function goUp():void{
@@ -923,34 +894,20 @@ package {
 			_player.ySpeed = Math.max(-5, _player.ySpeed);
 			
 		}
-		/*
-		private function goDown():void{
-			//trace("goDown()");
-			_surfer.yspeed += _ySpeedIncr * _speedPct;
-			_surfer.yspeed = Math.min(_maxYspeed, _surfer.yspeed);		
-		}*/
 		private function spacebarDown ():void{
 			// Jump
-			
-			//var onCloud:Boolean = _player.inCloud != null; // (_player.inCloud && _player.yPos < _player.inCloud.yPos + 10);
-			
+						
 			if(_player.inCloud != null){
 				var pDepth:Number = _player.yPos - _player.inCloud.yPos;
 				var depthPct:Number = pDepth / _player.inCloud.height;
-				
-			//}
-			
-			//trace("onCloud: "+onCloud)
-			//if(onCloud){
+	
 				// Jump
-				_player.ySpeed = _jumpSpeed + _jumpSpeed * 0.5 * depthPct;
+				_player.ySpeed = _jumpSpeed + _jumpSpeed * 0.2 * depthPct;
 				_player.xSpeed += _player.inCloud.xSpeed;
 				_playerJumping = true;
  				_player.yPos = _player.inCloud.yPos;
 				_player.inCloud = null;
 				_jumpSound.playMe(0,1,0.3);
-/*				_playerInRainbow = false;
-				_inRainbowObject = null;*/
 
 			}
 		}
@@ -959,11 +916,10 @@ package {
 			if(_playerInRainbow && ! _player.inCloud){
 				destroyRainbow(_inRainbowObject);
 				_player.ySpeed = _jumpSpeed*2;
-				growMeter("all",4);
+				_rainbowMeter.growMeter("all",4);
 				_harpSound.playMe();
 			}
 		}
-
 		private function checkKeys():void{
 			var l,r:Boolean;
 			l = leftCombo.anyDown;
@@ -973,7 +929,6 @@ package {
 			}else if(l && !r){
 				leftCombo.myFunction();
 			}else{
-				//slowDown("x");
 				if(_player.inCloud ){
 					_player.xSpeed *= .95;//drag;
 				}else{
@@ -1035,8 +990,10 @@ package {
 			if(!contains(_rainbowMeter)){
 				addChild(_rainbowMeter);
 				_rainbowMeter.x = _rainbowMeter.y = 15;
+				
 			}
 			addEventListener(Event.ENTER_FRAME, enterFrameHandler);
+			_rainbowMeter.addEventListener(Event.COMPLETE, rainbowMeterFullHandler);
 			_rainbowTimer.addEventListener(TimerEvent.TIMER, rainbowTimerHandler);
 			_prizeTimer.addEventListener(TimerEvent.TIMER, prizeTimerHandler);
 			_guestTimer.addEventListener(TimerEvent.TIMER, guestTimerHandler);
@@ -1048,6 +1005,7 @@ package {
 			_timeoutTimer.start();
 			_musicBoxSound.playMe();
 			_windSound.playMe(0,999);
+			_lastTimeCheck = getTimer();
 		}
 		
 		//-----------------------------
@@ -1064,17 +1022,17 @@ package {
 			var x2:Number = x1 + _player.xSpeed;
 			var pl:Number,pr:Number,pt:Number,pb:Number;
 			if(x1<x2){
-				pl = x1-_player.width/2;
-				pr = x2 + _player.width/2;
+				pl = x1-_player.width/4;
+				pr = x2 + _player.width/4;
 			}else{
-				pl = x2-_player.width/2;
-				pr = x1 + _player.width/2;
+				pl = x2-_player.width/4;
+				pr = x1 + _player.width/4;
 			}
 			if(y1<y2){
-				pt = y1 - _player.height/2;
+				pt = y1 - _player.height/4;
 				pb = y2;
 			}else{
-				pt = y2 - _player.height/2;
+				pt = y2 - _player.height/4;
 				pb = y1;
 			}
 
@@ -1125,7 +1083,7 @@ package {
 /*							removeEventListener(Event.ENTER_FRAME, enterFrameHandler);
 							_paused = true;*/
 							_player.xSpeed = _player.ySpeed = 0;
-							_fluteSound.playMe(0,10,.2);
+							_fluteSound.playMe(0,20,.2);
 							break;
 						
 						}
@@ -1139,7 +1097,7 @@ package {
 				_player.xPos = nextPoint.x;//-_player.xPos;
 				_player.yPos = nextPoint.y;// - _player.yPos;
 				
-				growMeter("all",.05);
+				_rainbowMeter.growMeter("all",.05);
 				var starColor:String = randomColor();
 				var s:Star = new Star(4+Math.random()*7, Math.random()*144-72,-1,-1,starColor);
 				_starsHolder.addChild(s);
@@ -1154,8 +1112,8 @@ package {
 					_playerInRainbow = false;
 					destroyRainbow(_inRainbowObject);
 					_inRainbowObject = null;
-					_player.xSpeed = (nextPoint.x-_player.xPos)/2;
-					_player.ySpeed = (nextPoint.y - _player.yPos)/2;
+					_player.xSpeed = 0;//(nextPoint.x-_player.xPos)/2;
+					_player.ySpeed = 0;//(nextPoint.y - _player.yPos)/2;
 					
 				}
 			}
@@ -1247,6 +1205,9 @@ package {
 			}
 			
 		}
+		//-----------------------------
+		//    ^ COLLISION CHECKS ^
+		//-----------------------------
 		//-------------------
 		//   v MOVE v
 		//-------------------
@@ -1374,6 +1335,8 @@ package {
 			// world edge on screen?
 			var assumedMaxCloudWidth:Number = 1000;
 			var showingEdge:String = "none";
+			var showingEdgeV:String = "none";
+			var cutoffV:Number = 0;
 			var im:uint; // <-- cloud.inMe iterator
 			
 /*			if(_worldFG.x + assumedMaxCloudWidth > _stageWidth/2 ){
@@ -1385,6 +1348,14 @@ package {
 				showingEdge = "left";
 			}else if(_worldFG.x + _worldWidth - assumedMaxCloudWidth <  _stageWidth ){
 				showingEdge = "right";
+			}
+			
+			if( _worldFG.y > 0 ){
+				showingEdgeV = "top";
+				cutoffV = _worldHeight - _worldFG.y;
+			} else if(_worldFG.y < _stageHeight - _worldHeight){
+				showingEdgeV = "bottom";
+				cutoffV = (_stageHeight - _worldHeight) - _worldFG.y;
 			}
 			
 /*			for(var i:uint = 0; i<_levels.length; i++){
@@ -1417,10 +1388,39 @@ package {
 			}*/
 			
 			for(var i:uint = 0; i<_levels.length; i++){
+				// LEVEL
 				var l:Vector.<Cloud> = _levels[i];
+				var homeY:Number = l[0].trueYpos;
+				if(showingEdgeV == "top"){
+					if(homeY > cutoffV){
+						homeY -= _worldHeight;
+					}
+				}else if(showingEdgeV == "bottom"){
+					if(homeY < cutoffV){
+						homeY += _worldHeight;
+					}
+				}
+
+				// changing Y position?
+				var changedY:Boolean = homeY != l[0].yPos;
+
+				//!!!!! If we're moving the cloud's yPos, we also have to move all of the cloud's contents' yPos !!!!
+				
 				for(var c:uint = 0; c < l.length;c++){
+					// CLOUD
 					var cloud:Cloud = l[c];
 					cloud.xPos += cloud.xSpeed;
+					// changing Y position
+					if( changedY ){
+						cloud.yPos = homeY;
+						for(im = 0; im < cloud.inMe.length; im ++){
+							// CLOUD CONTENTS
+							if(cloud.inMe[im] != _player){
+								cloud.inMe[im].yPos = homeY;
+							}
+						}
+					}
+					cloud.yPos = homeY;
 					// check world edge
 					var jumpDir:int = 0;
 					// Time to Wrap?
@@ -1447,6 +1447,7 @@ package {
 					if(jumpDir != 0){
 						cloud.xPos += _worldWidth * jumpDir;
 						for(im = 0; im < cloud.inMe.length; im ++){
+							// CLOUD CONTENTS
 							if(cloud.inMe[im] != _player){
 								cloud.inMe[im].xPos += _worldWidth*jumpDir;
 							}
@@ -1464,14 +1465,6 @@ package {
 			
 		}
 		
-		private function isOnscreen (x:Number, y:Number, buffer:Number = 0):void{
-			trace("RainbowCloudGame::isOnscreen");
-/*			l = -_worldFG.x;
-			r = l + _stageWidth;
-			t = -_worldFG.y;
-			b = t+_stageHeight;*/
-		}
-		
 		private function moveRainbows ():void{
 			//trace("RainbowCloudGame::moveRainbows");
 			if(_rainbows.length > 0){
@@ -1480,11 +1473,6 @@ package {
 				r = l + _stageWidth + 800;
 				t = -_worldFG.y - 600;
 				b = t+_stageHeight + 600;
-				
-/*				_worldFG.graphics.clear();
-				_worldFG.graphics.lineStyle(8,0xFF0000);
-				_worldFG.graphics.drawRect(l,t,r-l,b-t);
-				_worldFG.graphics.lineStyle();*/
 				
 				for(var i:int = _rainbows.length-1; i >= 0 ; i--){
 					var o:Object = _rainbows[i];
@@ -1496,24 +1484,7 @@ package {
 					rr = Math.max(p1.x,p2.x);
 					rt = Math.min(p1.y,p2.y,o.rainbow.center.y - o.rainbow.radius);
 					rb = Math.max(p1.y,p2.y);
-/*					if(p1.x < p2.x) 
-					{
-						rl = p1.x;
-						rr = p2.x;
-					}else{
-						rl = p2.x;
-						rr = p1.x;
-					}
-					if(p1.y < p2.y){
-						rt = p1.y;
-						rb = p2.y;
-					}else{
-						rt = p2.y;
-						rb = p1.y;
-					}*/
-
-					
-					
+				
 					if( ((rl < l && rr > l ) || (rr > r && rl < r) || (rl > l && rl < r) || (rr > l && rr < r)) && ((rt>t && rt<b) || (rb>t && rb<b) || (rt < t && rb > t) || (rb > b && rt < b))){
 						
 						
@@ -1535,25 +1506,33 @@ package {
 							}
 						}
 						o.rainbow.update(p1,p2,o.percentDrawn);
-						//_rainbowsHolder.graphics.clear();
-/*						_worldFG.graphics.lineStyle(2,0x00ff00);
-						_worldFG.graphics.drawRect(rl,rt,rr-rl,rb-rt);
-						_worldFG.graphics.lineStyle();*/
 					} else {
 						// Get rid of rainbow
 						destroyRainbow(o);
 					}
-				
-				
 				}
 			}
 		}
+		//-------------------
+		//   ^ MOVE ^
+		//-------------------
+		
+		private function isOnscreen (x:Number, y:Number, buffer:Number = 0):void{
+			trace("RainbowCloudGame::isOnscreen");
+/*			l = -_worldFG.x;
+			r = l + _stageWidth;
+			t = -_worldFG.y;
+			b = t+_stageHeight;*/
+		}
+		
+
 		
 		
 		private function playerHitPrize (p:Prize):void{
 			//trace("RainbowCloudGame::playerHitPrize");
 			// Get Points - grow bar of prize's color
-			growMeter(p.kind,10);
+			_rainbowMeter.growMeter(p.kind,10);
+			var destroyKind:String = p.kind;
 			// Burst
 			var c1:uint = p.color1;
 			var c2:uint = p.color2;
@@ -1567,6 +1546,20 @@ package {
 			// Destroy Prize
 			destroyPrize(p);
 			_enchantSound.playMe(0,1,0.5);
+			
+			// If meter stripe of this color is full,
+			// destroy all prizes of this color
+			for(i = 0; i < _rainbowMeter.colors.length; i++){
+				trace("_rainbowMeter.colors[i].name vs destroyKind:: "+_rainbowMeter.colors[i].name+" v "+destroyKind)
+				if(_rainbowMeter.colors[i].name == destroyKind){
+					trace("percent: "+_rainbowMeter.colors[i].percent)
+					if(_rainbowMeter.colors[i].percent >= 100){
+						
+						destroyPrizeKind(destroyKind);
+					}
+					break;
+				}
+			}
 		}
 		
 		private function playerHitGuest (g:Guest):void{
@@ -1597,23 +1590,25 @@ package {
 			// -- onUpdate, move all relative to player... :
 			// _rainbowsHolder.x = _worldFG.x = _partyHolder.x = - _player.xPos + _player.x; 
 			// _rainbowsHolder.y = _worldFG.y = _partyHolder.y = - _player.yPos + _player.y;
-			var playerTween:GTween = new GTween(_player, 1, { xPos:tx, yPos:ty }, { onComplete:presentInvitationToGuest, onChange:inviteTweenProgressHandler, ease:Cubic.easeOut } );
+			var playerTween:GTween = new GTween(_player, .5, { xPos:tx, yPos:ty }, { onComplete:presentInvitationToGuest, onChange:inviteTweenProgressHandler, ease:Cubic.easeOut } );
 			//playerTween.addEventListener(GTween.PROGRESS, inviteTweenProgressHandler);
 		}
+		
 		private function inviteTweenProgressHandler (e:GTween):void{
-			trace("RainbowCloudGame::inviteTweenProgressHandler");
+			//trace("RainbowCloudGame::inviteTweenProgressHandler");
 			_rainbowsHolder.x = _worldFG.x = _partyHolder.x = - _player.xPos + _player.x; 
 			_rainbowsHolder.y = _worldFG.y = _partyHolder.y = - _player.yPos + _player.y;
 		}
+		
 		private function presentInvitationToGuest (e:GTween):void{
-			//trace("RainbowCloudGame::presentInvitationToGuest");
+			trace("RainbowCloudGame::presentInvitationToGuest");
 			// Present Invitation, play invite animation, then remove invitation.
 
 			var g:Guest = _invitedGuest;
-			var _invitation = new Invitation();
 			// face Guest
 			_player.frame = _player.xPos > g.xPos ? "leftup" : "rightup";
 			
+			_invitation = new Invitation();
 			_invitation.x = g.xPos + ( _player.xPos - g.xPos ) / 2;
 			_invitation.y = g.yPos - _player.height * .5;
 			_cloudsHolder.addChild(_invitation);
@@ -1624,7 +1619,10 @@ package {
 		}
 		
 		private function guestGoToParty ():void{
-			//trace("RainbowCloudGame::guestGoToParty");
+			trace("RainbowCloudGame::guestGoToParty");
+			
+		
+		//	_invitation.parent.removeChild(_invitation);
 			
 			// Take guest out of _guestsInWorld
 			_guestsInWorld.splice(_guestsInWorld.indexOf(_invitedGuest),1);
@@ -1636,13 +1634,23 @@ package {
 			var partySin:Number = Math.sin(partyAngle);
 			var xDist:Number = partyCos * 500;
 			var yDist:Number = partySin * 500;
-			var guestTween:GTween = new GTween(_invitedGuest, 1, {x:_invitedGuest.xPos + xDist, y:_invitedGuest.yPos + yDist }, {onComplete:guestToPartyCompleteHandler, ease:Quadratic.easeIn});
+			var guestTween:GTween = new GTween(_invitedGuest, 1.5, {x:_invitedGuest.xPos + xDist, y:_invitedGuest.yPos + yDist }, {onChange:guestToPartyProgressHandler, onComplete:guestToPartyCompleteHandler, ease:Quadratic.easeIn});
 			
 			// once offscreen, Remove flying guest, remove flying guest from _guestsInWorld, turn on corresponding guest at party
 			// Unfreeze Game
 			if(_paused){
 				togglePause();
 			}
+		}
+		
+		private function guestToPartyProgressHandler (e:GTween):void{
+			//trace("RainbowCloudGame::guestToPartyProgressHandler");
+				var starColor:String = randomColor();
+				var s:Star = new Star(10+Math.random()*17, 200 + Math.random()*140,-1,-1,starColor);
+				_starsHolder.addChild(s);
+				s.xPos = e.target.x;
+				s.yPos = e.target.y;
+				s.startFall();
 		}
 		
 		private function guestToPartyCompleteHandler (e:GTween):void{
@@ -1670,9 +1678,10 @@ package {
 				//msg+="\r_worldFG.x + _worldWidth - 800: "+(_worldFG.x + _worldWidth - 800);
 			}
 			
-			if((_player.xPos > _worldWidth || _player.xPos < 0) && !_paused){
+/*			if((_player.xPos > _worldWidth || _player.xPos < 0) && !_paused){
+				trace("output pause")
 				togglePause();
-			}
+			}*/
 			
 			msg+="\redge: "+showingEdge;
 			msg+="\rySpeed: "+Math.round(_player.ySpeed);
@@ -1686,57 +1695,7 @@ package {
 			output_txt.text = msg;
 		}
 		
-		private function growMeter (color:String, pct:Number):void{
-			//trace("RainbowCloudGame::growMeter");
-			switch(color){
-				default:
-				case "all":
-					_rainbowMeter.red.rotation = Math.min(180, _rainbowMeter.red.rotation + pct/100 * 180);
-					_rainbowMeter.orange.rotation = Math.min(180, _rainbowMeter.orange.rotation + pct/100 * 180);
-					_rainbowMeter.yellow.rotation = Math.min(180, _rainbowMeter.yellow.rotation + pct/100 * 180);
-					_rainbowMeter.green.rotation = Math.min(180, _rainbowMeter.green.rotation + pct/100 * 180);
-					_rainbowMeter.blue.rotation = Math.min(180, _rainbowMeter.blue.rotation + pct/100 * 180);
-					_rainbowMeter.violet.rotation = Math.min(180, _rainbowMeter.violet.rotation + pct/100 * 180);
-					break;
-				case "red":
-					_rainbowMeter.red.rotation = Math.min(180, _rainbowMeter.red.rotation + pct/100 * 180);
-					
-					break;
-				case "orange":
-					_rainbowMeter.orange.rotation = Math.min(180, _rainbowMeter.orange.rotation + pct/100 * 180);
-				
-					break;
-				case "yellow":
-				 	_rainbowMeter.yellow.rotation = Math.min(180, _rainbowMeter.yellow.rotation + pct/100 * 180);
-					
-					break;
-				case "green":
-					_rainbowMeter.green.rotation = Math.min(180, _rainbowMeter.green.rotation + pct/100 * 180);
-				
-					break;
-				case "blue":
-					_rainbowMeter.blue.rotation = Math.min(180, _rainbowMeter.blue.rotation + pct/100 * 180);
-				
-					break;
-				case "violet":
-					_rainbowMeter.violet.rotation = Math.min(180, _rainbowMeter.violet.rotation + pct/100 * 180);
-				
-					break;
-			}
-			// if all full,
-			if(
-				_rainbowMeter.red.rotation == 180 &&
-				_rainbowMeter.orange.rotation == 180 &&
-				_rainbowMeter.yellow.rotation == 180 &&
-				_rainbowMeter.green.rotation == 180 &&
-				_rainbowMeter.blue.rotation == 180 &&
-				_rainbowMeter.violet.rotation == 180
-				)
-				{
-					endGame();
-				}
-			// _musicBoxSound.playMe();
-		}
+		
 		
 		private function endGame ():void{
 			trace("RainbowCloudGame::endGame");
@@ -1764,7 +1723,6 @@ package {
 			var myYtween:GTween = new GTween(_endScreen, 2, {y:0}, { ease:Bounce.easeOut});
 		}
 	
-		
 		private function randomColor ():String{
 			//trace("RainbowCloudGame::randomColor");
 			var rc:String;
@@ -1826,6 +1784,7 @@ package {
 		//	trace("RainbowCloudGame::enterFrameHandler");
 			update();
 		}
+		
 		private function rainbowTimerHandler (e:TimerEvent):void{
 			//trace("RainbowCloudGame::rainbowTimerHandler");
 			
@@ -1938,11 +1897,21 @@ package {
 			// Remove Invite
 			var invite:Invitation = e.target as Invitation;
 			//destroyInvitation();
-			invite.removeEventListener(Event.COMPLETE,invitationCompleteHandler);
-			invite.parent.removeChild(invite);
+			trace("_invitation: "+_invitation);
+			trace("invite hasEventListener(Event.COMPLETE)"+invite.hasEventListener(Event.COMPLETE))
+			trace("invite == _invitation: "+(invite == _invitation))
+			//invite.removeEventListener(Event.COMPLETE,invitationCompleteHandler);
+			_invitation.removeEventListener(Event.COMPLETE, invitationCompleteHandler);
+			invite.parent.removeChild(_invitation);
+			_invitation = null;
+			//delete _invitation;
 			// Send Guest to party - only 1 invited guest at a time?
 			guestGoToParty();
 		}
 		
+		private function rainbowMeterFullHandler (e:Event):void{
+			trace("RainbowCloudGame::rainbowMeterFullHandler");
+			endGame();
+		}
 	};
 };
