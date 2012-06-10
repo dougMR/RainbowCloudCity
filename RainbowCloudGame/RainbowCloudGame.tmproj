@@ -72,14 +72,14 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>24</integer>
+				<integer>38</integer>
 				<key>line</key>
-				<integer>1404</integer>
+				<integer>101</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>1392</integer>
+			<integer>63</integer>
 		</dict>
 		<key>src/com/megadoug/rainbowcloudgame/Body.as</key>
 		<dict>
@@ -100,14 +100,30 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>39</integer>
+				<integer>59</integer>
 				<key>line</key>
-				<integer>173</integer>
+				<integer>219</integer>
 			</dict>
+			<key>columnSelection</key>
+			<false/>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>134</integer>
+			<integer>23</integer>
+			<key>selectFrom</key>
+			<dict>
+				<key>column</key>
+				<integer>53</integer>
+				<key>line</key>
+				<integer>219</integer>
+			</dict>
+			<key>selectTo</key>
+			<dict>
+				<key>column</key>
+				<integer>59</integer>
+				<key>line</key>
+				<integer>219</integer>
+			</dict>
 		</dict>
 		<key>src/com/megadoug/rainbowcloudgame/Guest.as</key>
 		<dict>

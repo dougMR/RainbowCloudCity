@@ -91,7 +91,6 @@ package {
 		private var _stageWidth:Number;
 		private var _stageHeight:Number;
 		private var _worldYgap:Number;
-		private var _cloudGap:Number = 200;
 		
 //		private var _playerWorldX:Number;
 //		private var _playerWorldY:Number;
@@ -100,9 +99,11 @@ package {
 		private var _speedPct:Number; // <-- 0to1
 		private var _levelsNum:uint;
 		
-		private var _gravity:Number = .12;
+		private var _gravity:Number = .06;//.12;
 		private var _drag:Number = .95;
-		private var _jumpSpeed:Number = -6;
+		private var _jumpSpeed:Number = -3;//-6
+		private var _cloudGap:Number = 105;//210;
+		
 		
 	//	private var _onscreenClouds:Vector.<Cloud>;
 		private var _levels:Vector.< Vector.<Cloud> >;
@@ -192,14 +193,16 @@ package {
 			_speedPct = .3;
 			_xSpeedIncr = 1;
 			
+			_stageWidth = stage.stageWidth;
+			_stageHeight = stage.stageHeight;
+			
 			_worldWidth = stage.stageWidth * 5;//8;
 			//_worldHeight = stage.stageHeight * 4;//5;
-			_levelsNum = 11;//18;
+			_levelsNum = Math.ceil(_stageHeight / _cloudGap) + 1; //11;//18;
 			_worldHeight = (_levelsNum ) * _cloudGap;
 			
 			
-			_stageWidth = stage.stageWidth;
-			_stageHeight = stage.stageHeight;
+
 			
 			_worldYgap = 2 * _stageHeight;
 			
@@ -297,18 +300,21 @@ package {
 			var yStep:Number = _cloudGap; //(_worldHeight - maxCloudH) / (_levelsNum-1);
 			var nextX:Number;
 			
+			// Left
 			_cloudsHolder.graphics.beginFill(0x00ffFF,1);
 			_cloudsHolder.graphics.drawRect(0,0,10,_worldHeight);
 			_cloudsHolder.graphics.endFill();
+			// Right
 			_cloudsHolder.graphics.beginFill(0xffff88,1);
 			_cloudsHolder.graphics.drawRect(_worldWidth-10,0,10,_worldHeight);
 			_cloudsHolder.graphics.endFill();
-			
-			_cloudsHolder.graphics.beginFill(0xffff66,1);
-			_cloudsHolder.graphics.drawRect(0,- _worldYgap/2,_worldWidth,5);
+			// Top
+			_cloudsHolder.graphics.beginFill(0x00FFFF,1);
+			_cloudsHolder.graphics.drawRect(0,0,_worldWidth,5);
 			_cloudsHolder.graphics.endFill();
-			_cloudsHolder.graphics.beginFill(0x66ffff,1);
-			_cloudsHolder.graphics.drawRect(0,_worldHeight + _worldYgap/2,_worldWidth,5);
+			// Bottom
+			_cloudsHolder.graphics.beginFill(0xffffff,1);
+			_cloudsHolder.graphics.drawRect(0,_worldHeight-5,_worldWidth,5);
 			_cloudsHolder.graphics.endFill();
 			
 			
@@ -335,7 +341,7 @@ package {
 					
 					nextX = c * slotWidth;//minGap;
 					var w:Number = Math.round(minW + Math.random()*(maxW - minW));
-					var h:Number = Math.round(Math.random()*40 + 40);
+					var h:Number = Math.round(Math.random()*20 + 20);
 					var xadd:Number = Math.random()*(slotWidth - w - 100);
 					var newCloud:Cloud = new Cloud(w,h);
 					newCloud.yPos = newCloud.y = levely;
@@ -1350,12 +1356,14 @@ package {
 				showingEdge = "right";
 			}
 			
+			var assumedMaxCloudHeight:Number = 100;
+			
 			if( _worldFG.y > 0 ){
 				showingEdgeV = "top";
-				cutoffV = _worldHeight - _worldFG.y;
+				cutoffV = _worldHeight - _worldFG.y - assumedMaxCloudHeight;
 			} else if(_worldFG.y < _stageHeight - _worldHeight){
 				showingEdgeV = "bottom";
-				cutoffV = (_stageHeight - _worldHeight) - _worldFG.y;
+				cutoffV = (_stageHeight - _worldHeight) - _worldFG.y + assumedMaxCloudHeight;
 			}
 			
 /*			for(var i:uint = 0; i<_levels.length; i++){
